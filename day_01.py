@@ -56,6 +56,7 @@ def get_top_total_calories(total_calories_per_elf, elf_count=None):
 
 
 def run():
+    print("TEST")
     return
     elves_calories_per_snack = read_input()
 
