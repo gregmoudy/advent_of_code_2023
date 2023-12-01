@@ -1,76 +1,115 @@
-# --- Day 1: PLACEHOLDER ---
+# --- Day 1: Trebuchet?! ---
+
+# You try to ask why they can't just use a weather machine ("not powerful enough") and where they're even sending you ("the sky") 
+# and why your map looks mostly blank ("you sure ask a lot of questions") and hang on did you just say the sky ("of course, where do you think snow comes from") 
+# when you realize that the Elves are already loading you into a trebuchet ("please hold still, we need to strap you in").
+
+# As they're making the final adjustments, they discover that their calibration document (your puzzle input) has been amended 
+# by a very young Elf who was apparently just excited to show off her art skills. Consequently, the Elves are having trouble 
+# reading the values on the document.
+
+# The newly-improved calibration document consists of lines of text; each line originally contained a specific calibration 
+# value that the Elves now need to recover. On each line, the calibration value can be found by combining the first digit and 
+# the last digit (in that order) to form a single two-digit number.
+
+# For example:
+
+# 1abc2
+# pqr3stu8vwx
+# a1b2c3d4e5f
+# treb7uchet
+# In this example, the calibration values of these four lines are 12, 38, 15, and 77. Adding these together produces 142.
+
+# Consider your entire calibration document. What is the sum of all of the calibration values?
+
+
+# --- Part Two ---
+# Your calculation isn't quite right. It looks like some of the digits are actually spelled out with letters: one, 
+# two, three, four, five, six, seven, eight, and nine also count as valid "digits".
+
+# Equipped with this new information, you now need to find the real first and last digit on each line. For example:
+
+# two1nine
+# eightwothree
+# abcone2threexyz
+# xtwone3four
+# 4nineeightseven2
+# zoneight234
+# 7pqrstsixteen
+# In this example, the calibration values are 29, 83, 13, 24, 42, 14, and 76. Adding these together produces 281.
+
+# What is the sum of all of the calibration values?
 
 
 import timeit
-
+import re
 
 
 def read_input():
-    '''Read the input file and return the string data as tuple of int tuples.'''
     with open('./day_01_input.txt', 'r') as file:
         lines = file.read().splitlines()
-    
-    elves_calories_per_snack = list() # All the elves snack calories lists.
-    elf_calories_per_snack = list()
+
+    return lines
+
+
+
+def get_answer(lines, use_words = False):
+    answer = 0
+
+    number_lookup = { 
+        '1' : 1, 
+        '2' : 2, 
+        '3' : 3, 
+        '4' : 4, 
+        '5' : 5, 
+        '6' : 6, 
+        '7' : 7, 
+        '8' : 8, 
+        '9' : 9, 
+    }
+
+    if use_words:
+        number_word_lookup = { 
+            'one'   : 1, 
+            'two'   : 2, 
+            'three' : 3, 
+            'four'  : 4, 
+            'five'  : 5, 
+            'six'   : 6, 
+            'seven' : 7, 
+            'eight' : 8, 
+            'nine'  : 9, 
+        }
+
+        number_lookup.update( number_word_lookup )
 
     for line in lines:
-        if not line:
-            elves_calories_per_snack.append(tuple(elf_calories_per_snack))
-            elf_calories_per_snack = list()
-            continue
+        # https://stackoverflow.com/questions/33406313/how-to-match-any-string-from-a-list-of-strings-in-regular-expressions-in-python
+        # Join the list on the pipe character |, which represents different options in regex.
+        matches = re.findall(r"(?=("+'|'.join(number_lookup.keys())+r"))", line)
 
-        elf_calories_per_snack.append(int(line))
- 
-    elves_calories_per_snack = tuple(elves_calories_per_snack)
+        digit_1 = number_lookup[matches[0]]
+        digit_2 = number_lookup[matches[-1]]
 
-    return elves_calories_per_snack
+        number = int(f'{digit_1}{digit_2}')
+        answer += number
 
-
-
-def get_top_total_calories(total_calories_per_elf, elf_count=None):
-    '''Using the list given go through and create a tuple of however many max calories per elf were asked for.'''
-
-    # Make a copy so we don't mangle the original as we will be removing items from the list as we find the current max item.
-    total_calories_per_elf = list(total_calories_per_elf)
-
-    # If no elf_count is proveded, use the entire list.
-    elf_count = elf_count or len(total_calories_per_elf)
+    return answer
     
-    # Don't allow elf_count to be higher than what is available in the list.
-    elf_count = min(elf_count, len(total_calories_per_elf))
-    
-    # Go through the list however many times we were told and find the current max value and then remove it from the list keep track of those items along the way.
-    top_total_calories = list()
-    for _i in range(elf_count):
-        top_total_calories_for_elf = max(total_calories_per_elf)
-        top_total_calories.append(top_total_calories_for_elf)
-        total_calories_per_elf.remove(top_total_calories_for_elf)
-    
-    top_total_calories = tuple(top_total_calories)
-
-    # Here is a more streamlined approach:
-    #top_total_calories = sorted(total_calories_per_elf, reverse=True)[0:elf_count]
-
-    return top_total_calories
-
 
 
 def run():
-    print("TEST")
-    return
-    elves_calories_per_snack = read_input()
+    input_data = read_input()
 
     print('DAY 01')    
 
     # Part 1 Answer
-    total_calories_per_elf = [sum(x) for x in elves_calories_per_snack]
-    elf_max_total_calories = max(total_calories_per_elf)
-    print(f'Find the Elf carrying the most Calories. How many total Calories is that Elf carrying? : {elf_max_total_calories}') # 69528
+    answer_1 = get_answer(input_data)
+    print(f'Part 1 - What is the sum of all of the calibration values? : {answer_1}') # 54951
 
-    #Part 2 Answer
-    top_total_calories = get_top_total_calories(total_calories_per_elf, elf_count=3)
-    top_total_calories_sum = sum(top_total_calories)
-    print(f'Find the top three Elves carrying the most Calories. How many Calories are those Elves carrying in total? : {top_total_calories_sum}') # 206152
+    # Part 2 Answer
+    answer_2 = get_answer(input_data, use_words = True)
+    print(f'Part 2 - What is the sum of all of the calibration values? : {answer_2}') # 55218
 
 
 
