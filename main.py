@@ -7,7 +7,9 @@
 # unlocked when you complete the first. Each puzzle grants one star. Good luck!
 
 import day_01
+import day_02
 
 
 if __name__ == '__main__':
     day_01.run()
+    day_02.run()

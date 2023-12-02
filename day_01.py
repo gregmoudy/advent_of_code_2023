@@ -41,79 +41,63 @@
 # What is the sum of all of the calibration values?
 
 
-import timeit
+import solver
 import re
 
 
-def read_input():
-    with open('./day_01_input.txt', 'r') as file:
-        lines = file.read().splitlines()
+class Solver(solver.Solver):
+    def get_answer(self, data, part2 = False):
+        answer = 0
 
-    return lines
-
-
-
-def get_answer(lines, use_words = False):
-    answer = 0
-
-    number_lookup = { 
-        '1' : 1, 
-        '2' : 2, 
-        '3' : 3, 
-        '4' : 4, 
-        '5' : 5, 
-        '6' : 6, 
-        '7' : 7, 
-        '8' : 8, 
-        '9' : 9, 
-    }
-
-    if use_words:
-        number_word_lookup = { 
-            'one'   : 1, 
-            'two'   : 2, 
-            'three' : 3, 
-            'four'  : 4, 
-            'five'  : 5, 
-            'six'   : 6, 
-            'seven' : 7, 
-            'eight' : 8, 
-            'nine'  : 9, 
+        number_lookup = { 
+            '1' : 1, 
+            '2' : 2, 
+            '3' : 3, 
+            '4' : 4, 
+            '5' : 5, 
+            '6' : 6, 
+            '7' : 7, 
+            '8' : 8, 
+            '9' : 9, 
         }
 
-        number_lookup.update( number_word_lookup )
+        if part2:
+            number_word_lookup = { 
+                'one'   : 1, 
+                'two'   : 2, 
+                'three' : 3, 
+                'four'  : 4, 
+                'five'  : 5, 
+                'six'   : 6, 
+                'seven' : 7, 
+                'eight' : 8, 
+                'nine'  : 9, 
+            }
 
-    for line in lines:
-        # https://stackoverflow.com/questions/33406313/how-to-match-any-string-from-a-list-of-strings-in-regular-expressions-in-python
-        # Join the list on the pipe character |, which represents different options in regex.
-        matches = re.findall(r"(?=("+'|'.join(number_lookup.keys())+r"))", line)
+            number_lookup.update( number_word_lookup )
 
-        digit_1 = number_lookup[matches[0]]
-        digit_2 = number_lookup[matches[-1]]
+        for line in data:
+            # https://stackoverflow.com/questions/33406313/how-to-match-any-string-from-a-list-of-strings-in-regular-expressions-in-python
+            # Join the list on the pipe character |, which represents different options in regex.
+            matches = re.findall(r"(?=("+'|'.join(number_lookup.keys())+r"))", line)
 
-        number = int(f'{digit_1}{digit_2}')
-        answer += number
+            digit_1 = number_lookup[matches[0]]
+            digit_2 = number_lookup[matches[-1]]
 
-    return answer
+            number = int(f'{digit_1}{digit_2}')
+            answer += number
+
+        return answer
     
 
 
 def run():
-    input_data = read_input()
-
-    print('DAY 01')    
-
-    # Part 1 Answer
-    answer_1 = get_answer(input_data)
-    print(f'Part 1 - What is the sum of all of the calibration values? : {answer_1}') # 54951
-
-    # Part 2 Answer
-    answer_2 = get_answer(input_data, use_words = True)
-    print(f'Part 2 - What is the sum of all of the calibration values? : {answer_2}') # 55218
+    solver = Solver(__file__)
+    solver.run()
+    # 54951
+    # 55218
 
 
 
 if __name__ == '__main__':
-    start_time = timeit.default_timer()
     run()
-    print('Runtime: {} seconds.'.format(round(timeit.default_timer() - start_time, 5)))
